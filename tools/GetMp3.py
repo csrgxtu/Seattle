@@ -37,10 +37,11 @@ else:
             else:
                 print 'Error:', rid, sid, smp3Url
                 cursor.execute("update songs set flag = 'dead' where id = " + str(rid))
-        except timeout:
+        except:
             print 'Error:', rid, sid, smp3Url
             cursor.execute("update songs set flag = 'dead' where id = " + str(rid))
 
+        conn.commit()
         sleep(randint(0, 10)) # slowly request, for anti-crawl policy
 
 conn.close()
