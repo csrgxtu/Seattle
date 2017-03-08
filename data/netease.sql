@@ -1,7 +1,9 @@
 create table songs (
-  id  char(16),
+  id  INTEGER AUTO_INCREMENT,
+  sid char(16),
   name text,
   singer text,
   neteaseUrl text,
-  mp3Url text
+  mp3Url text,
+  flag char(16) default 'default' -- default, processed, dead
 );

@@ -9,6 +9,7 @@ import os
 import sqlite3
 from time import sleep
 from random import randint
+from socket import *
 
 db_filename = '../data/netease.db'
 
@@ -20,17 +21,25 @@ if db_is_new:
     print 'database not exists'
 else:
     cursor = conn.cursor()
-    cursor.execute("select * from songs")
+    cursor.execute("select * from songs where flag = 'default'")
     for row in cursor.fetchall()[1:]:
-        sid = row[0]
-        smp3Url = row[-1]
-        resp = unirest.get(smp3Url)
-        if resp.code == 200:
-            print 'Succ:', sid, smp3Url
-            with open('../data/songs/' + sid + '.mp3', 'w') as f:
-                f.write(resp.body)
-        else:
-            print 'Error:', sid, smp3Url
+        rid = row[0]
+        sid = row[1]
+        smp3Url = row[-2]
+        # print rid, sid, smp3Url
+        try:
+            resp = unirest.get(smp3Url)
+            if resp.code == 200:
+                print 'Succ:', rid, sid, smp3Url
+                cursor.execute("update songs set flag = 'processed' where id = " + str(rid))
+                with open('../data/songs/' + sid + '.mp3', 'w') as f:
+                    f.write(resp.body)
+            else:
+                print 'Error:', rid, sid, smp3Url
+                cursor.execute("update songs set flag = 'dead' where id = " + str(rid))
+        except timeout:
+            print 'Error:', rid, sid, smp3Url
+            cursor.execute("update songs set flag = 'dead' where id = " + str(rid))
 
         sleep(randint(0, 10)) # slowly request, for anti-crawl policy
 

@@ -24,6 +24,7 @@ with sqlite3.connect(db_filename) as conn:
         print 'Inserting initial data'
         f = open(csv_filename, 'rt')
         try:
+            index = 1
             reader = csv.reader(f)
             for row in reader:
                 sid = row[0]
@@ -32,11 +33,12 @@ with sqlite3.connect(db_filename) as conn:
                 sneteaseUrl = row[3]
                 smp3Url = row[4]
 
-                sql = "insert into songs (id, name, singer, neteaseUrl, mp3Url) values ('" + sid.replace('\'', '\'\'') + "', '" + sname.replace('\'', '\'\'') + "', '" + ssinger.replace('\'', '\'\'') + "', '" + sneteaseUrl.replace('\'', '\'\'') + "', '" + smp3Url.replace('\'', '\'\'') + "')"
+                sql = "insert into songs (id, sid, name, singer, neteaseUrl, mp3Url) values (" + str(index) + ", '" + sid.replace('\'', '\'\'') + "', '" + sname.replace('\'', '\'\'') + "', '" + ssinger.replace('\'', '\'\'') + "', '" + sneteaseUrl.replace('\'', '\'\'') + "', '" + smp3Url.replace('\'', '\'\'') + "')"
                 # sql = "insert into songs (id, name, singer, neteaseUrl, mp3Url) values (?, ?, ?, ?, ?)"
                 # conn.execute(sql, (sid, sname, ssinger, sneteaseUrl, smp3Url))
-                print sql
+                # print sql
                 conn.execute(sql)
+                index = index + 1
                 print sid
         finally:
             f.close()
